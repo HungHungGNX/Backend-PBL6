@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Product, Order, OrderItem, ShippingAddress, Review
+from .models import Product, Order, OrderItem, ShippingAddress, Review, Cart,CartItem
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -70,6 +70,13 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = '__all__'
+
+
+
 class OrderSerializer(serializers.ModelSerializer):
     orderItems = serializers.SerializerMethodField(read_only=True)
     shippingAddress = serializers.SerializerMethodField(read_only=True)
@@ -91,6 +98,24 @@ class OrderSerializer(serializers.ModelSerializer):
         except:
             address = False
         return address
+
+    def get_user(self, obj):
+        user = obj.user
+        serializer = UserSerializer(user, many=False)
+        return serializer.data
+
+class CartSerializer(serializers.ModelSerializer):
+    cartItems = serializers.SerializerMethodField(read_only=True)
+    user = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = '__all__'
+
+    def get_cartItems(self, obj):
+        items = obj.cartitem_set.all()
+        serializer = CartItemSerializer(items, many=True)
+        return serializer.data
 
     def get_user(self, obj):
         user = obj.user
