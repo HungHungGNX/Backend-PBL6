@@ -89,6 +89,6 @@ def updateCart(request, pk):
 @api_view(['DELETE'])
 @permission_classes([IsAdminUser])
 def deleteCartItems(request, pk):
-    cartItem = Cart.objects.get(_id=pk)
+    cartItem = CartItem.objects.get(_id=pk)
     cartItem.delete()
     return Response('Cart remove item')
